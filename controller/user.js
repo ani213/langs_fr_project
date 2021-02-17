@@ -122,6 +122,13 @@ module.exports.loginUser=(req,res)=>{
 
 module.exports.forgetPassword=(req,res)=>{
     if(req.body.email&&req.body.password){
-        
+       let salt=common.salt();
+       let hashPassword=common.encryptPassword(req.body.password,salt)
+        util.model.User.update({salt:salt,hashPassword:hashPassword},{where:{email:req.body.email}})
+        .then((data)=>{
+            res.send({message:"success"})
+        }).catch((err)=>{
+            res.status(400).send({message:err.message})
+        })
     }
 }
