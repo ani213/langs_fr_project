@@ -130,5 +130,7 @@ module.exports.forgetPassword=(req,res)=>{
         }).catch((err)=>{
             res.status(400).send({message:err.message})
         })
+    }else{
+        res.status(400).send({message:"email or password is missing"})
     }
 }
