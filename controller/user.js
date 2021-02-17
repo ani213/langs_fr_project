@@ -1,5 +1,7 @@
 let util=require("../util");
-let common=require("../common")
+let common=require("../common");
+var jwt = require('jsonwebtoken');
+var key=require("../key")
 module.exports.regesterUser=(req,res)=>{
     _validateUser(req).then((user)=>{
        util.model.User.build(user).save()
@@ -64,4 +66,62 @@ const _validateUser=(req)=>{
              reject(new Error("email is missing."))
          }  
     })
+}
+
+module.exports.loginUser=(req,res)=>{
+
+    if(req.body.email||req.body.mobileNumber){
+        if(req.body.email){
+            util.model.User.findOne({
+                where:{email:req.body.email},
+            })
+            .then((user)=>{
+                if(user){
+                    if(common.checkPassword(req.body.password,user.hashPassword,user.salt)){
+                        let userData={
+                            name:user.name,
+                            email:user.email
+                        }
+                        let token=jwt.sign({name:user.name,email:user.email,salt:user.salt},key.key)
+                        res.send({user:userData,token:token})
+                    }else{
+                         res.status(400).send({message:"username or password is wrong"});
+                    }
+                }else{
+                 res.status(400).send({message:"user not found"});
+                }
+            }).catch((err)=>{
+                res.status(400).send({message:err.message});
+            })
+        }
+       if(req.body.mobileNumber){
+        util.model.User.findOne({where:{mobileNumber:req.body.mobileNumber}})
+        .then((user)=>{
+            if(user){
+                if(common.checkPassword(req.body.password,user.hashPassword,user.salt)){
+                    let userData={
+                        name:user.name,
+                        email:user.email
+                    }
+                    let token=jwt.sign({name:user.name,email:user.email,salt:user.salt},key.key)
+                    res.send({user:userData,token:token})
+                }else{
+                     res.status(400).send({message:"username or password is wrong"});
+                }
+            }else{
+             res.status(400).send({message:"user not found"});
+            }
+        }).catch((err)=>{
+            res.status(400).send({message:err.message});
+        })
+       } 
+    }else{
+        res.status(400).send({message:"email or mobile number required but missing"});
+    }
+}
+
+module.exports.forgetPassword=(req,res)=>{
+    if(req.body.email&&req.body.password){
+        
+    }
 }
