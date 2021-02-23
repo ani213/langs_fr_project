@@ -27,6 +27,30 @@ module.exports.userDef = {
     allowNull: false,
     type: Sequelize.STRING 
   },
+  longitude:{
+    allowNull: true,
+    type: Sequelize.STRING,
+    defaultValue: null
+
+  },
+  latitude:{
+    allowNull: true,
+    type: Sequelize.STRING,
+    defaultValue: null
+
+  },
+  deviceId:{
+    allowNull: true,
+    type: Sequelize.STRING ,
+    defaultValue: null
+
+  },
+  deviceToken:{
+    allowNull: true,
+    type: Sequelize.STRING, 
+    defaultValue: null
+
+  },
   createdAt: {
     allowNull: false,
     type: Sequelize.DATE
