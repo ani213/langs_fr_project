@@ -4,13 +4,12 @@ let modelInit=require("./models/init");
 var bodyParser = require('body-parser');
 var routes=require('./routes');
 var cors = require('cors');
-// var auth=require("./auth");
-// app.use(auth.initialize())
+var auth=require("./auth")();
 app.use(cors())
 modelInit();
 app.use(bodyParser.json());
 let router=express.Router()
-routes(router)
+routes(router,auth);
 
 app.use('/app',router)
 

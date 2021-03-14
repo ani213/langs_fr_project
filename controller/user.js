@@ -1,13 +1,34 @@
 let util=require("../util");
 let common=require("../common");
 var jwt = require('jsonwebtoken');
-var key=require("../key")
+var key=require("../config/key");
+
+let _generateToken=(data,time)=>{
+    return jwt.sign(data,key.secret,{ expiresIn: time||"1h" })
+}
+
+module.exports.me=(req,res)=>{
+   let token=_generateToken({key:key.key},"10h")
+   res.send({x_csrf:token})
+}
+
 module.exports.regesterUser=(req,res)=>{
     _validateUser(req).then((user)=>{
         console.log(user)
        util.model.User.build(user).save()
        .then((result)=>{
-           res.send(result)
+           let data={
+            "status": result.status,
+            "id": result.id,
+            "longitude": result.longitude,
+            "latitude": result.latitude,
+            "deviceId": result.deviceId,
+            "deviceToken": result.deviceToken,
+            "name": result.name,
+            "mobileNumber": result.mobileNumber,
+            "email": result.email,
+           }
+           res.send(data)
        }).catch((err)=>{
         res.status(400).send({message:err.message});
     })
@@ -17,6 +38,7 @@ module.exports.regesterUser=(req,res)=>{
 }
 
 const _validateUser=(req)=>{
+    // console.log(req.body,"validate")
     return new Promise((resolve,reject)=>{
         let data={};
         data["longitude"]=req.body.longitude;
@@ -75,7 +97,7 @@ const _validateUser=(req)=>{
 }
 
 module.exports.loginUser=(req,res)=>{
-
+//    console.log(req.body)
     if(req.body.email||req.body.mobileNumber){
         if(req.body.email){
             util.model.User.findOne({
@@ -83,10 +105,23 @@ module.exports.loginUser=(req,res)=>{
             })
             .then((user)=>{
                 if(user){
+                    
                     if(common.checkPassword(req.body.password,user.hashPassword,user.salt)){
+                        let data={
+                            "status": user.status,
+                            "id": user.id,
+                            "longitude": user.longitude,
+                            "latitude": user.latitude,
+                            "deviceId": user.deviceId,
+                            "deviceToken": user.deviceToken,
+                            "name": user.name,
+                            "mobileNumber": user.mobileNumber,
+                            "email": user.email,
+                           }
                         // let userData=user
-                        let token=jwt.sign({name:user.name,email:user.email,salt:user.salt},key.key)
-                        res.send({user:user,token:token})
+                        let token=_generateToken(data,"7h")
+                        console.log(token)
+                        res.send({user:data,token:token})
                     }else{
                          res.status(400).send({message:"username or password is wrong"});
                     }
@@ -102,12 +137,19 @@ module.exports.loginUser=(req,res)=>{
         .then((user)=>{
             if(user){
                 if(common.checkPassword(req.body.password,user.hashPassword,user.salt)){
-                    let userData={
-                        name:user.name,
-                        email:user.email
-                    }
-                    let token=jwt.sign({name:user.name,email:user.email,salt:user.salt},key.key)
-                    res.send({user:userData,token:token})
+                    let data={
+                        "status": user.status,
+                        "id": user.id,
+                        "longitude": user.longitude,
+                        "latitude": user.latitude,
+                        "deviceId": user.deviceId,
+                        "deviceToken": user.deviceToken,
+                        "name": user.name,
+                        "mobileNumber": user.mobileNumber,
+                        "email": user.email,
+                       }
+                    let token=_generateToken(data,"7h")
+                    res.send({user:data,token:token})
                 }else{
                      res.status(400).send({message:"username or password is wrong"});
                 }
@@ -136,4 +178,39 @@ module.exports.forgetPassword=(req,res)=>{
     }else{
         res.status(400).send({message:"email or password is missing"})
     }
+}
+
+module.exports.resetPassword=(req,res)=>{
+    if(req.body&&req.body.oldPassword&&req.body.email &&req.body.newPassword){
+            util.model.User.findOne({
+                where:{
+                    email:req.body.email,
+                }
+            }).then((user)=>{
+                if(user){
+                    if(common.checkPassword(req.body.oldPassword,user.hashPassword,user.salt)){
+                        let salt=common.salt();
+                        let hashPassword=common.encryptPassword(req.body.newPassword,salt);
+                        util.model.User.update({salt:salt,hashPassword:hashPassword},{where:{email:req.body.email}})
+                        .then((updatedData)=>{
+                            res.send({message:"success"})
+                        }).catch((err)=>{
+                            res.status(400).send({message:err.message})
+                        })
+                    }else{
+                      res.status(400).send({message:"password or email is wrong"})
+                    }
+                }else{
+                  res.status(400).send({message:"User not found"})
+                }
+            }).catch((err)=>{
+                res.status(400).send({message:err.message})
+            })
+    }else{
+        res.status(400).send({message:"email or oldpassword or newPassword require"})
+    }
+}
+
+module.exports.test=(req,res)=>{
+    res.send({message:"success"})
 }
