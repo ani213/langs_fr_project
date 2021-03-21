@@ -1,16 +1,27 @@
 let util=require("../util");
+let upload=require("../helper/uploadFile");
 
-
-module.exports.createCategory=(req,res)=>{
-    if(req.body){
-        util.model.Category.build(req.body).save()
-        .then((categeory)=>{
-            res.send(categeory)
-        }).catch((err)=>{
+module.exports.createCategory=async (req,res)=>{
+    try{
+        await upload.uploadFile(req,res)
+        if(req.file){
+                let data=req.body;
+               data["product_image"]=req.file.path;
+               util.model.Category.build(data).save()
+            .then((categeory)=>{
+             res.send(categeory)
+             }).catch((err)=>{
             res.status(400).send({message:err.message})
-        })
-    }else{
-        res.status(400).send({message:"product name required but missing"})
+         })
+        }
+
+    }catch(err){
+        if(err.message==="File too large")
+        {  
+            res.status(400).send({message:"File is too large. File should be maximum 2MB"})
+        }else{
+        res.status(400).send({message:err.message})
+        }
     }
 }
 

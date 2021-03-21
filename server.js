@@ -8,6 +8,9 @@ var auth=require("./auth")();
 app.use(cors())
 modelInit();
 app.use(bodyParser.json());
+app.use("/uploads",express.static('uploads'));
+
+
 let router=express.Router()
 routes(router,auth);
 

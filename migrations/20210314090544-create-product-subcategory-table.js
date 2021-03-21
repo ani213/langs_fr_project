@@ -17,7 +17,7 @@ module.exports = {
             allowNull: false,
             type: Sequelize.STRING
           },
-          category_image:{
+          subcategory_image:{
             allowNull: true,
             type: Sequelize.STRING
           },
