@@ -13,6 +13,13 @@ module.exports.createCategory=async (req,res)=>{
              }).catch((err)=>{
             res.status(400).send({message:err.message})
          })
+        }else{
+            util.model.Category.build(req.body).save()
+            .then((categeory)=>{
+                res.send(categeory)
+            }).catch((err)=>{
+                res.status(400).send({message:err.message})
+            })
         }
 
     }catch(err){
@@ -36,4 +43,12 @@ module.exports.getCategory=(req,res)=>{
     }).catch((err)=>{
         res.send({message:err.message})
     })
+}
+
+module.exports.editCategory=(req,res)=>{
+    if(req.body.id){
+       util.model.update(req.body,{where:""})
+    }else{
+        res.send({message:"name or image is required"})
+    }
 }

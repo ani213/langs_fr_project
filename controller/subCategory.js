@@ -13,6 +13,13 @@ module.exports.createSubCategory=async (req,res)=>{
                }).catch((err)=>{
                    res.status(400).send({message:err.message})
                })
+        }else{
+            util.model.SubCategory.build(req.body).save()
+               .then((subcat)=>{
+                   res.send(subcat)
+               }).catch((err)=>{
+                   res.status(400).send({message:err.message})
+               })
         }
 
     }catch(err){

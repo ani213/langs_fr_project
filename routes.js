@@ -10,6 +10,7 @@ module.exports=function(router,auth){
     router.route('/category').get(categoryController.getCategory);
     router.route('/subcategory/:id').get(subcategoryController.getSubCategoryById);
     router.route('/product/subcategory/:id').get(subcategoryController.getSubCategoryByCatogeryId);
+    router.route('/category').put(categoryController.editCategory);
 
 
     router.route('/user/regester').post(userController.regesterUser);

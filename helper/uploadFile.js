@@ -11,7 +11,7 @@ var storage = multer.diskStorage({
 const fileFilter=(req,file,cb)=>{
     const match = ["image/png", "image/jpeg","image/jpg"];
     if(match.indexOf(file.mimetype) === -1){
-        console.log("should be reject")
+        // console.log("should be reject")
         cb(new Error("File should be Image"),false)
     }else{
         cb(null,true)
