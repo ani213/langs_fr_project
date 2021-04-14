@@ -14,7 +14,7 @@ module.exports=function(){
     util.model.SubCategory=sequelize.define('SubCategories',subCategory.subCategoryDef,tableOption);
     
 
-    util.model.Category.hasMany(util.model.SubCategory,{as: 'subCategories',foreignKey: 'category_id'})
+    util.model.Category.hasMany(util.model.SubCategory,{as: 'subCategories',foreignKey: 'category_id', onDelete: 'cascade'} )
 
 
 

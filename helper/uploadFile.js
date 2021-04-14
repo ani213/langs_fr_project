@@ -1,6 +1,7 @@
 const util = require("util");
-var multer  = require('multer');
-var storage = multer.diskStorage({
+let multer  = require('multer');
+const fs = require('fs');
+let storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'uploads/')
     },
@@ -18,7 +19,9 @@ const fileFilter=(req,file,cb)=>{
     }
 }
   
-var uploadFile = multer({storage: storage,limits:{fileSize:1024*1024*2},fileFilter:fileFilter}).single("file");
-var uploadFilesMiddleware = util.promisify(uploadFile);
+let uploadFile = multer({storage: storage,limits:{fileSize:1024*1024*2},fileFilter:fileFilter}).single("file");
+let uploadFilesMiddleware = util.promisify(uploadFile);
+let deleteUploadedFile=util.promisify(fs.unlink)
 
 module.exports.uploadFile=uploadFilesMiddleware
+module.exports.deleteUploadedFile=deleteUploadedFile

@@ -11,6 +11,7 @@ module.exports=function(router,auth){
     router.route('/subcategory/:id').get(subcategoryController.getSubCategoryById);
     router.route('/product/subcategory/:id').get(subcategoryController.getSubCategoryByCatogeryId);
     router.route('/category').put(categoryController.editCategory);
+    router.route('/category/:id').delete(categoryController.deleteCategory);
 
 
     router.route('/user/regester').post(userController.regesterUser);
