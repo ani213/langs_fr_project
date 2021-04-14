@@ -21,4 +21,6 @@ module.exports=function(router,auth){
 
 
     router.route("/test").get(auth.x_csrf_auth,userController.test)
+
+    router.route("/up").post(categoryController.uploadZipFile)
 }

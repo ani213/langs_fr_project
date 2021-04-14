@@ -18,10 +18,16 @@ const fileFilter=(req,file,cb)=>{
         cb(null,true)
     }
 }
-  
+
+
+// let uploadZip1=multer({storage:storage}).single("file");
+
+let uploadZip=util.promisify(multer({storage:storage}).single("file"))
+
 let uploadFile = multer({storage: storage,limits:{fileSize:1024*1024*2},fileFilter:fileFilter}).single("file");
 let uploadFilesMiddleware = util.promisify(uploadFile);
-let deleteUploadedFile=util.promisify(fs.unlink)
+let deleteUploadedFile=util.promisify(fs.unlink);
 
 module.exports.uploadFile=uploadFilesMiddleware
-module.exports.deleteUploadedFile=deleteUploadedFile
+module.exports.deleteUploadedFile=deleteUploadedFile;
+module.exports.uploadZip=uploadZip;

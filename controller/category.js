@@ -106,3 +106,16 @@ module.exports.deleteCategory= async (req,res)=>{
     }
    
 }
+
+module.exports.uploadZipFile=async (req,res)=>{
+    try{
+        await upload.uploadZip(req,res);
+        if(req.file){
+            res.send(req.file)
+        }else{
+            res.send({message:"please select file"})
+        }
+    }catch(err){
+        res.status(400).send({message:err.message})
+    }
+}
